@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Veuillez remplir tous les champs'),
+          content: Text('Veuillez remplir tous les champs du formulaire'),
           backgroundColor: Colors.red,
         ),
       );
