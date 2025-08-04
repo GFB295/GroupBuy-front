@@ -24,9 +24,13 @@ class ApiService {
   Future<bool> testConnection() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/health'),
+        Uri.parse('http://localhost:5000/api/health'),
         headers: {'Content-Type': 'application/json'},
-      ).timeout(const Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 10));
+      
+      print('Test de connexion - Status: ${response.statusCode}');
+      print('Test de connexion - Body: ${response.body}');
+      
       return response.statusCode == 200;
     } catch (e) {
       print('Erreur de connexion: $e');
@@ -50,6 +54,10 @@ class ApiService {
     };
 
     final uri = Uri.parse('$baseUrl$endpoint');
+    
+    print('🌐 Requête HTTP: $method $uri');
+    print('📦 Headers: $defaultHeaders');
+    if (body != null) print('📄 Body: $body');
     
     try {
       http.Response response;
@@ -79,10 +87,82 @@ class ApiService {
           throw Exception('Méthode HTTP non supportée: $method');
       }
 
+      print('📡 Réponse - Status: ${response.statusCode}');
+      print('📡 Réponse - Body: ${response.body}');
+
       return response;
     } catch (e) {
-      print('Erreur de requête HTTP: $e');
+      print('❌ Erreur de requête HTTP: $e');
       throw Exception('Erreur de connexion au serveur: $e');
+    }
+  }
+
+  // Authentification
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/users/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
+      print('🔐 Login - Status: ${response.statusCode}');
+      print('🔐 Login - Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        // Sauvegarder le token
+        if (data['token'] != null) {
+          await _storage.write(key: 'jwt_token', value: data['token']);
+        }
+        
+        return data;
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['error'] ?? 'Erreur de connexion');
+      }
+    } catch (e) {
+      print('❌ Erreur de login: $e');
+      throw Exception('Erreur de connexion: $e');
+    }
+  }
+
+  // Inscription
+  Future<Map<String, dynamic>> register(String name, String email, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/users/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'password': password,
+        }),
+      ).timeout(const Duration(seconds: 10));
+
+      print('📝 Register - Status: ${response.statusCode}');
+      print('📝 Register - Body: ${response.body}');
+
+      if (response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        
+        // Sauvegarder le token
+        if (data['token'] != null) {
+          await _storage.write(key: 'jwt_token', value: data['token']);
+        }
+        
+        return data;
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['error'] ?? 'Erreur d\'inscription');
+      }
+    } catch (e) {
+      print('❌ Erreur de register: $e');
+      throw Exception('Erreur d\'inscription: $e');
     }
   }
 
@@ -190,7 +270,7 @@ class ApiService {
 
   // Récupérer le suivi d'une commande
   Future<Map<String, dynamic>> fetchOrderTracking(String orderId) async {
-    final response = await _makeRequest('GET', '/tracking/order/$orderId');
+    final response = await _makeRequest('GET', '/orders/$orderId/tracking');
     
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -255,5 +335,16 @@ class ApiService {
       final errorData = jsonDecode(response.body);
       throw Exception(errorData['message'] ?? 'Erreur lors du paiement');
     }
+  }
+
+  // Déconnexion
+  Future<void> logout() async {
+    await _storage.delete(key: 'jwt_token');
+  }
+
+  // Vérifier si l'utilisateur est connecté
+  Future<bool> isLoggedIn() async {
+    final token = await _storage.read(key: 'jwt_token');
+    return token != null;
   }
 } 

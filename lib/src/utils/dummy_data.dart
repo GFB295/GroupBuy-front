@@ -5,8 +5,8 @@ import '../models/order.dart';
 import '../models/user.dart';
 
 final dummyUsers = [
-  User(id: 'u1', name: 'Alice', email: 'Alice@gmail.com'),
-  User(id: 'u2', name: 'Bob', email: 'Bob@gmail.com'),
+  User(id: 'u1', name: 'Alice', email: 'Alice@gmail.com', role: 'admin'),
+  User(id: 'u2', name: 'Bob', email: 'Bob@gmail.com', role: 'client'),
 ];
 
 final dummyProducts = [
