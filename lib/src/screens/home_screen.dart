@@ -6,6 +6,7 @@ import '../providers/cart_provider.dart';
 import '../providers/favorites_provider.dart';
 import '../utils/palette.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/simple_category_selector.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -81,18 +82,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                // Catégories
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildCategoryChip('Tous', null),
-                      _buildCategoryChip('Électronique', 'Électronique'),
-                      _buildCategoryChip('Informatique', 'Informatique'),
-                      _buildCategoryChip('Mode', 'Mode'),
-                      _buildCategoryChip('Audio', 'Audio'),
-                    ],
-                  ),
+                // Catégories avec images
+                SimpleCategorySelector(
+                  selectedCategory: selectedCategory,
+                  onCategoryChanged: (category) {
+                    setState(() {
+                      selectedCategory = category == 'Tous' ? null : category;
+                    });
+                    _loadFilteredOffers();
+                  },
                 ),
               ],
             ),
@@ -142,28 +140,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildCategoryChip(String label, String? category) {
-    final isSelected = selectedCategory == category;
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Text(label),
-        selected: isSelected,
-        onSelected: (selected) {
-          setState(() {
-            selectedCategory = selected ? category : null;
-          });
-          _loadFilteredOffers();
-        },
-        backgroundColor: Colors.grey[200],
-        selectedColor: AppPalette.accent,
-        labelStyle: TextStyle(
-          color: isSelected ? Colors.white : Colors.black87,
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildProductCard(Product product) {
     return Card(

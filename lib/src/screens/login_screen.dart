@@ -59,7 +59,22 @@ class _LoginScreenState extends State<LoginScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pushReplacementNamed(context, '/home');
+          
+          // Redirection selon le rôle
+          final role = result['user']?['role'] ?? 'client';
+          print('🔐 Rôle détecté: $role');
+          print('🔐 Données complètes: $result');
+          
+          if (role == 'admin') {
+            print('🚀 Redirection vers /admin-dashboard');
+            Navigator.pushReplacementNamed(context, '/admin-dashboard');
+          } else if (role == 'manager') {
+            print('🚀 Redirection vers /manager-dashboard');
+            Navigator.pushReplacementNamed(context, '/manager-dashboard');
+          } else {
+            print('🚀 Redirection vers /home (client)');
+            Navigator.pushReplacementNamed(context, '/home');
+          }
         }
       } else {
         throw Exception('Email ou mot de passe incorrect');
