@@ -106,4 +106,4 @@ class _CategoryImageDisplayState extends State<CategoryImageDisplay> {
       ),
     );
   }
-} 
+}

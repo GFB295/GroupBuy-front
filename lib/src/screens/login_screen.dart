@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    
+
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final authService = AuthService();
-      
+
       // Tester la connexion au serveur d'abord
       final isConnected = await authService.testConnection();
       if (!isConnected) {
@@ -46,11 +46,11 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       final result = await authService.login(email, password);
-      
+
       if (result != null && result['token'] != null) {
         // Sauvegarder le token
         await _storage.write(key: 'jwt_token', value: result['token']);
-        
+
         // Connexion réussie
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -59,12 +59,12 @@ class _LoginScreenState extends State<LoginScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          
+
           // Redirection selon le rôle
           final role = result['user']?['role'] ?? 'client';
           print('🔐 Rôle détecté: $role');
           print('🔐 Données complètes: $result');
-          
+
           if (role == 'admin') {
             print('🚀 Redirection vers /admin-dashboard');
             Navigator.pushReplacementNamed(context, '/admin-dashboard');
@@ -207,13 +207,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       child: _isLoading
                           ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
                           : const Text('Se connecter'),
                     ),
                   ),
@@ -237,4 +237,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-} 
+}

@@ -23,7 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-    
+
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -50,7 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final authService = AuthService();
-      
+
       // Tester la connexion au serveur d'abord
       final isConnected = await authService.testConnection();
       if (!isConnected) {
@@ -58,11 +58,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
 
       final result = await authService.register(name, email, password);
-      
+
       if (result != null && result['token'] != null) {
         // Sauvegarder le token
         await _storage.write(key: 'jwt_token', value: result['token']);
-        
+
         // Inscription réussie
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -218,13 +218,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       child: _isLoading
                           ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
                           : const Text("S'inscrire"),
                     ),
                   ),

@@ -13,11 +13,11 @@ class _CategoryDemoScreenState extends State<CategoryDemoScreen> {
   
   // Map des catégories vers leurs images
   final Map<String, String> categoryImages = {
-    'Tous': 'assets/images/BouillonElectro.jpg',
-    'Électronique': 'assets/images/BouillonElectro.jpg',
-    'Informatique': 'assets/images/tablette portatif.jpg',
-    'Mode': 'assets/images/Sac en wax.jpg',
-    'Audio': 'assets/images/Microphone.jpg',
+    'Tous': 'assets/images/categories/all_categories.jpg',
+    'Électronique': 'assets/images/categories/electronics.jpg',
+    'Informatique': 'assets/images/categories/computers.jpg',
+    'Mode': 'assets/images/categories/fashion.jpg',
+    'Audio': 'assets/images/categories/audio.jpg',
   };
 
   // Liste des catégories disponibles
@@ -167,4 +167,4 @@ class _CategoryDemoScreenState extends State<CategoryDemoScreen> {
       ),
     );
   }
-} 
+}

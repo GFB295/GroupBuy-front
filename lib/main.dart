@@ -27,7 +27,11 @@ import 'src/screens/manager_profile_screen.dart';
 import 'src/screens/manager_stats_screen.dart';
 import 'src/screens/category_demo_screen.dart';
 import 'src/screens/home_screen_with_categories.dart';
+import 'src/widgets/category_selector.dart';
+import 'src/widgets/icon_category_selector.dart';
 import 'src/widgets/image_test_widget.dart';
+import 'src/screens/image_diagnostic_screen.dart';
+import 'src/screens/simple_image_test_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: GroupBuyApp()));
@@ -83,6 +87,8 @@ class GroupBuyApp extends StatelessWidget {
         '/home-with-categories': (context) => const HomeScreenWithCategories(),
         '/test-categories': (context) => const HomeScreen(),
         '/test-images': (context) => const ImageTestWidget(),
+        '/image-diagnostic': (context) => const ImageDiagnosticScreen(),
+        '/simple-image-test': (context) => const SimpleImageTestScreen(),
       },
     );
   }
