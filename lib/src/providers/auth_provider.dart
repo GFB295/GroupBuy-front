@@ -39,7 +39,7 @@ class AuthNotifier extends StateNotifier<User?> {
     }
   }
 
-  Future<void> register(String name, String email, String password) async {
+  Future<void> register(String name, String email, String password, String contact, String address ) async {
     try {
       print('📝 AuthProvider: Tentative d\'inscription...');
       
@@ -49,7 +49,7 @@ class AuthNotifier extends StateNotifier<User?> {
         throw Exception('Serveur inaccessible. Vérifiez que le serveur Node.js est démarré.');
       }
       
-      final response = await _authService.register(name, email, password);
+      final response = await _authService.register(name, email, password, contact, address, );
       
       if (response != null && response['user'] != null) {
         final userData = response['user'];

@@ -1,6 +1,38 @@
 import 'product.dart';
 import 'group.dart';
 
+class OrderItem {
+  final String productId;
+  final String productName;
+  final int quantity;
+  final double price;
+
+  OrderItem({
+    required this.productId,
+    required this.productName,
+    required this.quantity,
+    required this.price,
+  });
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    return OrderItem(
+      productId: json['productId'] ?? '',
+      productName: json['productName'] ?? '',
+      quantity: json['quantity'] ?? 1,
+      price: (json['price'] ?? 0).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'productId': productId,
+      'productName': productName,
+      'quantity': quantity,
+      'price': price,
+    };
+  }
+}
+
 class DeliveryAddress {
   final String? street;
   final String? city;
@@ -36,12 +68,13 @@ class DeliveryAddress {
 class Order {
   final String id;
   final String userId;
-  final String groupId;
-  final String productId;
+  final List<OrderItem> items;
+  final double totalAmount;
+  final String status;
+  final String? groupId;
+  final String? productId;
   final Product? product;
   final Group? group;
-  final int quantity;
-  final double totalAmount;
   final String paymentStatus;
   final String paymentMethod;
   final String deliveryStatus;
@@ -64,38 +97,42 @@ class Order {
   Order({
     required this.id,
     required this.userId,
-    required this.groupId,
-    required this.productId,
+    required this.items,
+    required this.totalAmount,
+    required this.status,
+    this.groupId,
+    this.productId,
     this.product,
     this.group,
-    required this.quantity,
-    required this.totalAmount,
-    required this.paymentStatus,
-    required this.paymentMethod,
-    required this.deliveryStatus,
+    this.paymentStatus = 'pending',
+    this.paymentMethod = 'mobile_money',
+    this.deliveryStatus = 'pending',
     this.deliveryAddress,
     this.trackingNumber,
     this.estimatedDelivery,
     this.actualDelivery,
     this.notes,
     required this.createdAt,
-    required this.updatedAt,
-  });
+    DateTime? updatedAt,
+  }) : updatedAt = updatedAt ?? createdAt;
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
       id: json['_id'] ?? json['id'],
       userId: json['userId'] ?? '',
-      groupId: json['groupId'] ?? '',
-      productId: json['productId'] ?? '',
+      items: json['items'] != null 
+          ? (json['items'] as List).map((item) => OrderItem.fromJson(item)).toList()
+          : [],
+      totalAmount: (json['totalAmount'] ?? 0).toDouble(),
+      status: json['status'] ?? 'pending',
+      groupId: json['groupId'],
+      productId: json['productId'],
       product: json['productId'] != null && json['productId'] is Map 
           ? Product.fromJson(json['productId']) 
           : null,
       group: json['groupId'] != null && json['groupId'] is Map 
           ? Group.fromJson(json['groupId']) 
           : null,
-      quantity: json['quantity'] ?? 1,
-      totalAmount: (json['totalAmount'] ?? 0).toDouble(),
       paymentStatus: json['paymentStatus'] ?? 'pending',
       paymentMethod: json['paymentMethod'] ?? 'mobile_money',
       deliveryStatus: json['deliveryStatus'] ?? 'pending',
@@ -119,12 +156,13 @@ class Order {
     return {
       'id': id,
       'userId': userId,
+      'items': items.map((item) => item.toJson()).toList(),
+      'totalAmount': totalAmount,
+      'status': status,
       'groupId': groupId,
       'productId': productId,
       'product': product?.toJson(),
       'group': group?.toJson(),
-      'quantity': quantity,
-      'totalAmount': totalAmount,
       'paymentStatus': paymentStatus,
       'paymentMethod': paymentMethod,
       'deliveryStatus': deliveryStatus,
@@ -141,12 +179,13 @@ class Order {
   Order copyWith({
     String? id,
     String? userId,
+    List<OrderItem>? items,
+    double? totalAmount,
+    String? status,
     String? groupId,
     String? productId,
     Product? product,
     Group? group,
-    int? quantity,
-    double? totalAmount,
     String? paymentStatus,
     String? paymentMethod,
     String? deliveryStatus,
@@ -161,12 +200,13 @@ class Order {
     return Order(
       id: id ?? this.id,
       userId: userId ?? this.userId,
+      items: items ?? this.items,
+      totalAmount: totalAmount ?? this.totalAmount,
+      status: status ?? this.status,
       groupId: groupId ?? this.groupId,
       productId: productId ?? this.productId,
       product: product ?? this.product,
       group: group ?? this.group,
-      quantity: quantity ?? this.quantity,
-      totalAmount: totalAmount ?? this.totalAmount,
       paymentStatus: paymentStatus ?? this.paymentStatus,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       deliveryStatus: deliveryStatus ?? this.deliveryStatus,

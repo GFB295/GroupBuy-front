@@ -15,6 +15,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _contactController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final _storage = const FlutterSecureStorage();
   bool _obscureText = true;
   bool _isLoading = false;
@@ -23,8 +25,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+    final contact = _contactController.text.trim();
+    final address = _addressController.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+    if (name.isEmpty || email.isEmpty || password.isEmpty || contact.isEmpty || address.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Veuillez remplir tous les champs'),
@@ -57,21 +61,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
         throw Exception('Impossible de se connecter au serveur. Vérifiez que le serveur backend est démarré.');
       }
 
-      final result = await authService.register(name, email, password);
+      final result = await authService.register(name, email, password, contact, address);
 
       if (result != null && result['token'] != null) {
-        // Sauvegarder le token
         await _storage.write(key: 'jwt_token', value: result['token']);
-
-        // Inscription réussie
+        
+        // Stocker les données utilisateur localement
+        if (result['user'] != null) {
+          await _storage.write(key: 'user_email', value: result['user']['email']);
+          await _storage.write(key: 'user_name', value: result['user']['name']);
+          await _storage.write(key: 'user_contact', value: result['user']['contact'] ?? '');
+          await _storage.write(key: 'user_address', value: result['user']['address'] ?? '');
+          await _storage.write(key: 'user_role', value: result['user']['role']);
+          print('✅ Données utilisateur stockées localement');
+        }
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Compte créé avec succès !'),
+              content: Text('Inscription réussie !'),
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pushReplacementNamed(context, '/home');
+          final role = result['user']?['role'] ?? 'client';
+          print('🔐 Rôle détecté: $role');
+          if (role == 'admin') {
+            Navigator.pushReplacementNamed(context, '/admin-dashboard');
+          } else if (role == 'manager') {
+            Navigator.pushReplacementNamed(context, '/manager-dashboard');
+          } else {
+            Navigator.pushReplacementNamed(context, '/home');
+          }
         }
       } else {
         throw Exception('Erreur lors de la création du compte');
@@ -181,6 +201,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 16),
                   TextField(
+                    controller: _contactController,
+                    enabled: !_isLoading,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.phone, color: AppPalette.accent),
+                      labelText: 'Numéro de contact',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _addressController,
+                    enabled: !_isLoading,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.location_on, color: AppPalette.accent),
+                      labelText: 'Adresse',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    keyboardType: TextInputType.streetAddress,
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
                     controller: _passwordController,
                     enabled: !_isLoading,
                     decoration: InputDecoration(
@@ -248,4 +298,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
-} 
+}

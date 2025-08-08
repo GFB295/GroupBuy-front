@@ -53,14 +53,14 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>?> login(String email, String password) async {
+  Future<Map<String, dynamic>?> login(String email, String password, ) async {
     try {
       print('🔐 Tentative de connexion pour: $email');
       
       final response = await _makeAuthRequest(
         'POST',
         '/users/login',
-        body: {'email': email, 'password': password},
+        body: {'email': email, 'password': password,},
       );
 
       if (response.statusCode == 200) {
@@ -78,14 +78,14 @@ class AuthService {
     }
   }
 
-  Future<Map<String, dynamic>?> register(String name, String email, String password) async {
+  Future<Map<String, dynamic>?> register(String name, String email, String password, String address, String contact) async {
     try {
       print('📝 Tentative d\'inscription pour: $email');
       
       final response = await _makeAuthRequest(
         'POST',
         '/users/register',
-        body: {'name': name, 'email': email, 'password': password},
+        body: {'name': name, 'email': email, 'password': password, 'contact' : contact, 'address' : address, },
       );
 
       if (response.statusCode == 201) {

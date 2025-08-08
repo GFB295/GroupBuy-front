@@ -1,30 +1,35 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/order.dart';
-import '../services/order_service.dart';
 
-final orderProvider = StateNotifierProvider<OrderNotifier, AsyncValue<List<Order>>>(
-      (ref) => OrderNotifier(),
-);
+class OrderNotifier extends StateNotifier<List<Order>> {
+  OrderNotifier() : super([]);
 
-class OrderNotifier extends StateNotifier<AsyncValue<List<Order>>> {
-  OrderNotifier() : super(const AsyncValue.loading()) {
-    loadOrders();
+  // Ajouter une nouvelle commande
+  void addOrder(Order order) {
+    state = [...state, order];
   }
 
-  final OrderService _api = OrderService();
-
-  Future<void> loadOrders() async {
-    try {
-      state = const AsyncValue.loading();
-      final data = await _api.fetchOrders();
-      final orders = data.map((o) => Order.fromJson(o)).toList();
-      state = AsyncValue.data(orders);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
-    }
+  // Obtenir le nombre total de commandes
+  int getTotalOrders() {
+    return state.length;
   }
 
-  Future<void> refreshOrders() async {
-    await loadOrders();
+  // Obtenir le montant total dépensé
+  double getTotalSpent() {
+    return state.fold(0.0, (sum, order) => sum + order.totalAmount);
+  }
+
+  // Obtenir les commandes récentes
+  List<Order> getRecentOrders({int limit = 5}) {
+    return state.take(limit).toList();
+  }
+
+  // Vider l'historique (pour les tests)
+  void clearHistory() {
+    state = [];
   }
 }
+
+final orderProvider = StateNotifierProvider<OrderNotifier, List<Order>>((ref) {
+  return OrderNotifier();
+});

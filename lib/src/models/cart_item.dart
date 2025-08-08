@@ -2,57 +2,40 @@ import 'product.dart';
 
 class CartItem {
   final String id;
-  final Product product;
-  final int quantity;
+  final String name;
+  final String variant;
+  final String imageUrl;
   final double price;
-  final DateTime addedAt;
+  final double? oldPrice;
+  final int quantity;
 
   CartItem({
     required this.id,
-    required this.product,
-    required this.quantity,
+    required this.name,
+    required this.variant,
+    required this.imageUrl,
     required this.price,
-    required this.addedAt,
+    this.oldPrice,
+    required this.quantity,
   });
-
-  // Propriétés calculées
-  double get totalPrice => price * quantity;
-  double get savings => (product.individualPrice - price) * quantity;
-  double get savingsPercentage => ((product.individualPrice - price) / product.individualPrice) * 100;
-
-  factory CartItem.fromJson(Map<String, dynamic> json) {
-    return CartItem(
-      id: json['id'] ?? json['_id'],
-      product: Product.fromJson(json['product']),
-      quantity: json['quantity'] ?? 1,
-      price: (json['price'] ?? 0).toDouble(),
-      addedAt: DateTime.parse(json['addedAt']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'product': product.toJson(),
-      'quantity': quantity,
-      'price': price,
-      'addedAt': addedAt.toIso8601String(),
-    };
-  }
 
   CartItem copyWith({
     String? id,
-    Product? product,
-    int? quantity,
+    String? name,
+    String? variant,
+    String? imageUrl,
     double? price,
-    DateTime? addedAt,
+    double? oldPrice,
+    int? quantity,
   }) {
     return CartItem(
       id: id ?? this.id,
-      product: product ?? this.product,
-      quantity: quantity ?? this.quantity,
+      name: name ?? this.name,
+      variant: variant ?? this.variant,
+      imageUrl: imageUrl ?? this.imageUrl,
       price: price ?? this.price,
-      addedAt: addedAt ?? this.addedAt,
+      oldPrice: oldPrice ?? this.oldPrice,
+      quantity: quantity ?? this.quantity,
     );
   }
 } 

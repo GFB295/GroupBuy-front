@@ -32,6 +32,7 @@ import 'src/widgets/icon_category_selector.dart';
 import 'src/widgets/image_test_widget.dart';
 import 'src/screens/image_diagnostic_screen.dart';
 import 'src/screens/simple_image_test_screen.dart';
+import 'src/screens/payment_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: GroupBuyApp()));
@@ -52,6 +53,7 @@ class GroupBuyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
+        '/payment': (context) => const PaymentScreen(),
         '/product-detail': (context) {
           final product = ModalRoute.of(context)!.settings.arguments as Product;
           return ProductDetailScreen(product: product);
@@ -69,6 +71,7 @@ class GroupBuyApp extends StatelessWidget {
         '/orders': (context) => const OrderTrackingScreen(),
         '/notifications': (context) => const NotificationsScreen(),
         '/profile': (context) => const ProfileScreen(),
+
         // Admin routes
         '/admin-dashboard': (context) => const AdminDashboardScreen(),
         '/admin-users': (context) => const AdminUserManagementScreen(),

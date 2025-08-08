@@ -219,28 +219,42 @@ final dummyOrders = [
   Order(
     id: 'o1',
     userId: 'u1',
+    items: [
+      OrderItem(
+        productId: 'p1',
+        productName: 'Smartphone Samsung',
+        quantity: 1,
+        price: 15.0,
+      ),
+    ],
+    totalAmount: 15.0,
+    status: 'pending',
     groupId: 'g1',
     productId: 'p1',
-    quantity: 1,
-    totalAmount: 15.0,
     paymentStatus: 'paid',
     paymentMethod: 'mobile_money',
     deliveryStatus: 'preparing',
     createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
   ),
   Order(
     id: 'o2',
     userId: 'u2',
+    items: [
+      OrderItem(
+        productId: 'p2',
+        productName: 'Laptop HP',
+        quantity: 1,
+        price: 30.0,
+      ),
+    ],
+    totalAmount: 30.0,
+    status: 'pending',
     groupId: 'g2',
     productId: 'p2',
-    quantity: 1,
-    totalAmount: 30.0,
     paymentStatus: 'paid',
     paymentMethod: 'mobile_money',
     deliveryStatus: 'shipped',
     createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
   ),
 ];
 

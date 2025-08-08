@@ -10,7 +10,7 @@ class OrderTrackingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final orderState = ref.watch(orderProvider);
+    final orders = ref.watch(orderProvider);
     
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -25,52 +25,29 @@ class OrderTrackingScreen extends ConsumerWidget {
         backgroundColor: AppPalette.primary,
         elevation: 0,
       ),
-      body: orderState.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
-              const SizedBox(height: 16),
-              Text(
-                'Erreur de chargement',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red[600],
-                ),
+      body: orders.isEmpty
+          ? _buildEmptyState(context)
+          : RefreshIndicator(
+              onRefresh: () async {
+                // Pour l'instant, on ne fait rien car les données sont locales
+                // Dans une vraie app, on ferait un appel API ici
+              },
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: orders.length,
+                itemBuilder: (context, index) {
+                  final order = orders[index];
+                  return _buildOrderCard(context, order);
+                },
               ),
-              const SizedBox(height: 8),
-              Text(
-                e.toString(),
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-        data: (orders) => orders.isEmpty
-            ? _buildEmptyState(context)
-            : RefreshIndicator(
-                onRefresh: () => ref.read(orderProvider.notifier).refreshOrders(),
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: orders.length,
-                  itemBuilder: (context, index) {
-                    final order = orders[index];
-                    return _buildOrderCard(context, order);
-                  },
-                ),
-              ),
-      ),
+            ),
     );
   }
 
   Widget _buildOrderCard(BuildContext context, Order order) {
+    // Prendre le premier item pour l'affichage (ou créer un item par défaut)
+    final firstItem = order.items.isNotEmpty ? order.items.first : null;
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
@@ -117,7 +94,7 @@ class OrderTrackingScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          order.product?.name ?? 'Produit',
+                          firstItem?.productName ?? order.product?.name ?? 'Produit',
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -131,6 +108,16 @@ class OrderTrackingScreen extends ConsumerWidget {
                             color: Colors.grey[600],
                           ),
                         ),
+                        if (order.items.length > 1) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            '+${order.items.length - 1} autres articles',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

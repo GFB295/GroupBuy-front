@@ -14,6 +14,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _contactController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final _storage = const FlutterSecureStorage();
   bool _obscureText = true;
   bool _isLoading = false;
@@ -48,10 +50,18 @@ class _LoginScreenState extends State<LoginScreen> {
       final result = await authService.login(email, password);
 
       if (result != null && result['token'] != null) {
-        // Sauvegarder le token
         await _storage.write(key: 'jwt_token', value: result['token']);
-
-        // Connexion réussie
+        
+        // Stocker les données utilisateur localement
+        if (result['user'] != null) {
+          await _storage.write(key: 'user_email', value: result['user']['email']);
+          await _storage.write(key: 'user_name', value: result['user']['name']);
+          await _storage.write(key: 'user_contact', value: result['user']['contact'] ?? '');
+          await _storage.write(key: 'user_address', value: result['user']['address'] ?? '');
+          await _storage.write(key: 'user_role', value: result['user']['role']);
+          print('✅ Données utilisateur stockées localement');
+        }
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -59,12 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
               backgroundColor: Colors.green,
             ),
           );
-
-          // Redirection selon le rôle
-          final role = result['user']?['role'] ?? 'client';
+          final role = result['user']?['role'] ?? 'client'; // Corrected role extraction
           print('🔐 Rôle détecté: $role');
           print('🔐 Données complètes: $result');
-
           if (role == 'admin') {
             print('🚀 Redirection vers /admin-dashboard');
             Navigator.pushReplacementNamed(context, '/admin-dashboard');

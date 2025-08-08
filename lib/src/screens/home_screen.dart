@@ -56,10 +56,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _onCategoryChanged(String category) {
-    setState(() {
+                    setState(() {
       selectedCategory = category;
-    });
-    _loadFilteredOffers();
+                    });
+                    _loadFilteredOffers();
   }
 
   void _onBottomNavTap(int index) {
@@ -77,6 +77,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Navigator.pushNamed(context, '/profile');
         break;
     }
+  }
+
+  void _addToCart(Product product) {
+    ref.read(cartProvider.notifier).addToCart(product);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${product.name} ajouté au panier'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Voir le panier',
+          textColor: Colors.white,
+          onPressed: () => Navigator.pushNamed(context, '/cart'),
+        ),
+      ),
+    );
   }
 
   @override
@@ -298,13 +314,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       
                       ElevatedButton.icon(
                         onPressed: () {
-                          ref.read(cartProvider.notifier).addToCart(product);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${product.name} ajouté au panier'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
+                          _addToCart(product);
                         },
                         icon: const Icon(Icons.shopping_cart),
                         label: const Text('Ajouter'),

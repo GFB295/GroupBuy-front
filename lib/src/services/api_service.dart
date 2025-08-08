@@ -5,16 +5,19 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
 
 class ApiService {
-  // Configuration de l'URL de base selon la plateforme
+  // Adresse IP locale à modifier si besoin
+  static const String localIp = '127.0.0.1'; // ou ton IP réseau si tu veux tester sur mobile
+  static const int backendPort = 5000;
+
   static String get baseUrl {
     if (kIsWeb) {
-      return 'http://localhost:5000/api'; // Pour le web
+      return 'http://$localIp:$backendPort/api';
     } else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:5000/api'; // Pour l'émulateur Android
+      return 'http://10.0.2.2:$backendPort/api';
     } else if (Platform.isIOS) {
-      return 'http://localhost:5000/api'; // Pour iOS
+      return 'http://localhost:$backendPort/api';
     } else {
-      return 'http://localhost:5000/api'; // Par défaut
+      return 'http://localhost:$backendPort/api';
     }
   }
 
@@ -24,13 +27,11 @@ class ApiService {
   Future<bool> testConnection() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5000/api/health'),
+        Uri.parse('$baseUrl/health'),
         headers: {'Content-Type': 'application/json'},
       ).timeout(const Duration(seconds: 10));
-      
-      print('Test de connexion - Status: ${response.statusCode}');
+      print('Test de connexion - Status:  [32m${response.statusCode} [0m');
       print('Test de connexion - Body: ${response.body}');
-      
       return response.statusCode == 200;
     } catch (e) {
       print('Erreur de connexion: $e');
@@ -346,5 +347,84 @@ class ApiService {
   Future<bool> isLoggedIn() async {
     final token = await _storage.read(key: 'jwt_token');
     return token != null;
+  }
+
+  // Méthode pour récupérer le profil utilisateur
+  static Future<Map<String, dynamic>?> getProfile(String token) async {
+    try {
+      print('🔍 getProfile - Début de la requête');
+      print('🔍 getProfile - URL: $baseUrl/api/users/profile');
+      print('🔍 getProfile - Token: ${token.substring(0, 20)}...');
+      
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/users/profile'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('🔍 getProfile - Status: ${response.statusCode}');
+      print('🔍 getProfile - Headers: ${response.headers}');
+      print('🔍 getProfile - Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('✅ Profil récupéré avec succès');
+        print('🔍 Données du profil: $data');
+        return data;
+      } else if (response.statusCode == 401) {
+        print('❌ Token invalide ou expiré');
+        return null;
+      } else if (response.statusCode == 404) {
+        print('❌ Route /api/users/profile non trouvée');
+        return null;
+      } else {
+        print('❌ Erreur lors de la récupération du profil: ${response.statusCode}');
+        print('❌ Corps de la réponse: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('❌ Exception lors de la récupération du profil: $e');
+      return null;
+    }
+  }
+
+  // Méthode pour récupérer les statistiques utilisateur
+  static Future<Map<String, dynamic>?> getUserStats(String token) async {
+    try {
+      print('🔍 getUserStats - Début de la requête');
+      print('🔍 getUserStats - URL: $baseUrl/api/users/stats');
+      
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/users/stats'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      print('🔍 getUserStats - Status: ${response.statusCode}');
+      print('🔍 getUserStats - Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('✅ Statistiques récupérées avec succès');
+        print('🔍 Données des stats: $data');
+        return data;
+      } else if (response.statusCode == 401) {
+        print('❌ Token invalide ou expiré');
+        return null;
+      } else if (response.statusCode == 404) {
+        print('❌ Route /api/users/stats non trouvée');
+        return null;
+      } else {
+        print('❌ Erreur lors de la récupération des stats: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('❌ Exception lors de la récupération des stats: $e');
+      return null;
+    }
   }
 } 

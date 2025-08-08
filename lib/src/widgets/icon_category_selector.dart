@@ -55,9 +55,9 @@ class _IconCategorySelectorState extends State<IconCategorySelector> {
   Widget build(BuildContext context) {
     return Container(
       height: widget.height,
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12), // Réduit de 16 à 12
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min, // 🔧 CORRECTION: Force la Column à prendre le minimum d'espace
         children: [
           // Barre de catégories
           SizedBox(
@@ -80,12 +80,13 @@ class _IconCategorySelectorState extends State<IconCategorySelector> {
                       style: TextStyle(
                         color: isSelected ? Colors.white : Colors.black87,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontSize: 12, // Taille réduite pour économiser l'espace
                       ),
                     ),
                     avatar: Icon(
                       iconData,
                       color: isSelected ? Colors.white : color,
-                      size: 20,
+                      size: 18, // Réduit de 20 à 18
                     ),
                     selected: isSelected,
                     onSelected: (selected) {
@@ -110,40 +111,40 @@ class _IconCategorySelectorState extends State<IconCategorySelector> {
               },
             ),
           ),
-          
-          const SizedBox(height: 16),
-          
-          // Icône sélectionnée en grand
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+
+          const SizedBox(height: 8), // Réduit de 16 à 8
+
+          // Affichage de la catégorie sélectionnée - VERSION CORRIGÉE
+          Container(
+            height: 45, // 🔧 CORRECTION: Hauteur fixe au lieu d'Expanded pour éviter l'overflow
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: categoryIcons[selectedCategory]?['color']?.withOpacity(0.1) ?? Colors.grey[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: categoryIcons[selectedCategory]?['color']?.withOpacity(0.3) ?? Colors.grey[200]!,
               ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      categoryIcons[selectedCategory]?['icon'] ?? Icons.category,
-                      size: 40,
-                      color: categoryIcons[selectedCategory]?['color'] ?? Colors.grey,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Catégorie: $selectedCategory',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ],
+            ),
+            child: Row( // 🔧 CORRECTION: Row au lieu de Column pour plus de compacité
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  categoryIcons[selectedCategory]?['icon'] ?? Icons.category,
+                  size: 22, // Taille optimisée
+                  color: categoryIcons[selectedCategory]?['color'] ?? Colors.grey,
                 ),
-              ),
+                const SizedBox(width: 8),
+                Text(
+                  'Catégorie: $selectedCategory',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: categoryIcons[selectedCategory]?['color'] ?? Colors.grey[700],
+                  ),
+                ),
+              ],
             ),
           ),
         ],
