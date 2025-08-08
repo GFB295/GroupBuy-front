@@ -12,6 +12,8 @@ import 'src/screens/payment_success_screen.dart';
 import 'src/screens/cart_screen.dart';
 import 'src/screens/favorites_screen.dart';
 import 'src/screens/order_tracking_screen.dart';
+import 'src/screens/my_purchases_screen.dart';
+import 'src/screens/test_my_purchases_screen.dart';
 import 'src/screens/notifications_screen.dart';
 import 'src/screens/profile_screen.dart';
 import 'src/screens/admin_dashboard_screen.dart';
@@ -69,6 +71,8 @@ class GroupBuyApp extends StatelessWidget {
         '/cart': (context) => const CartScreen(),
         '/favorites': (context) => const FavoritesScreen(),
         '/orders': (context) => const OrderTrackingScreen(),
+        '/my-purchases': (context) => const MyPurchasesScreen(),
+        '/test-my-purchases': (context) => const TestMyPurchasesScreen(),
         '/notifications': (context) => const NotificationsScreen(),
         '/profile': (context) => const ProfileScreen(),
 

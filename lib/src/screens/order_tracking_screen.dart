@@ -102,7 +102,8 @@ class OrderTrackingScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Commande #${order.id.substring(0, 8)}',
+                          // CORRECTION ICI : Vérifier la longueur avant substring
+                          'Commande #${_getSafeOrderId(order.id)}',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -310,6 +311,14 @@ class OrderTrackingScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  // MÉTHODE AJOUTÉE POUR ÉVITER L'ERREUR DE SUBSTRING
+  String _getSafeOrderId(String orderId) {
+    if (orderId.length <= 8) {
+      return orderId;
+    }
+    return orderId.substring(0, 8);
   }
 
   Color _getStatusColor(String status) {
